@@ -1,5 +1,6 @@
 import Image from "next/image";
 import {Metadata} from "next";
+import {notFound} from "next/navigation";
 
 async function getProduct(id: string) {
     const res = await fetch(`https://fakestoreapi.com/products/${id}`, {
@@ -9,12 +10,12 @@ async function getProduct(id: string) {
     return res.json();
 }
 
-export async function generateMetadata({
-                                           params,
-                                       }: {
+export async function generateMetadata(props: {
     params: { id: string };
 }): Promise<Metadata> {
-    const product = await getProduct(params.id);
+    const params = await props.params; // ✅ await params
+    const { id } = params;
+    const product = await getProduct(id);
 
     return {
         title: product.title,
@@ -39,8 +40,23 @@ export async function generateMetadata({
     };
 }
 
-export default async function ProductPage({params}: { params: { id: string } }) {
-    const product = await getProduct(params.id);
+export default async function ProductPage(props: { params: { id: string } }) {
+    const params = await props.params; // ✅ await params
+    const { id } = params;
+    if (isNaN(Number(id))) {
+        return notFound();
+    }
+
+    let product;
+    try {
+        product = await getProduct(id); // server-side fetch
+    } catch {
+        return notFound();
+    }
+
+    if (!product) {
+        return notFound();
+    }
 
     return (
         <main className="p-6">
