@@ -4,7 +4,7 @@ import { NextRequest } from 'next/server';
 export const runtime = 'edge'; // Required for @vercel/og
 
 const font = fetch(
-    new URL('../../../public/Inter-Bold.ttf', import.meta.url)
+    new URL('../../../public/Inter_18pt-Bold.ttf', import.meta.url)
 ).then((res) => res.arrayBuffer());
 
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
